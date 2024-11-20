@@ -24,52 +24,52 @@ export default function TabLayout() {
       <Tabs.Screen
         name="FaceScan"
         options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-              <FontAwesome name="smile-o" size={28} color={focused ? '#fff' : '#808080'} />
-            </View>
-          ),
+          // tabBarIcon: ({ focused }) => (
+          //   <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+          //     <FontAwesome name="smile-o" size={28} color={focused ? '#fff' : '#808080'} />
+          //   </View>
+          // ),
         }}
       />
       <Tabs.Screen
         name="Questionnaire"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-              <FontAwesome name="clipboard" size={28} color={focused ? '#fff' : '#808080'} />
-            </View>
-          ),
-        }}
+        // options={{
+        //   tabBarIcon: ({ focused }) => (
+        //     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+        //       <FontAwesome name="clipboard" size={28} color={focused ? '#fff' : '#808080'} />
+        //     </View>
+        //   ),
+        // }}
       />
       <Tabs.Screen
         name="Dashboard"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-              <FontAwesome name="home" size={28} color={focused ? '#fff' : '#808080'} />
-            </View>
-          ),
-        }}
+        // options={{
+        //   tabBarIcon: ({ focused }) => (
+        //     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+        //       <FontAwesome name="home" size={28} color={focused ? '#fff' : '#808080'} />
+        //     </View>
+        //   ),
+        // }}
       />
       <Tabs.Screen
         name="Todos"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-              <FontAwesome name="check-square" size={28} color={focused ? '#fff' : '#808080'} />
-            </View>
-          ),
-        }}
+        // options={{
+        //   tabBarIcon: ({ focused }) => (
+        //     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+        //       <FontAwesome name="check-square" size={28} color={focused ? '#fff' : '#808080'} />
+        //     </View>
+        //   ),
+        // }}
       />
       <Tabs.Screen
         name="HabitBuilder"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-              <FontAwesome name="cogs" size={28} color={focused ? '#fff' : '#808080'} />
-            </View>
-          ),
-        }}
+        // options={{
+        //   tabBarIcon: ({ focused }) => (
+        //     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+        //       <FontAwesome name="cogs" size={28} color={focused ? '#fff' : '#808080'} />
+        //     </View>
+        //   ),
+        // }}
       />
     </Tabs>
   );
