@@ -1,44 +1,92 @@
 import React, { useState } from 'react';
-import { router } from 'expo-router';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Link } from 'expo-router';
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithCredential, updateProfile } from 'firebase/auth';
+import * as GoogleAuthSession from 'expo-auth-session/providers/google';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
-export default function Component() {
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyBpz4fY9nw8kcbdHm-eB1VsVOgvy_gM1W0",
+  authDomain: "mind-ease-a6263.firebaseapp.com",
+  projectId: "mind-ease-a6263",
+  storageBucket: "mind-ease-a6263.firebasestorage.app",
+  messagingSenderId: "625591827776",
+  appId: "1:625591827776:web:7f05a2f24da0c016eb0ea5",
+  measurementId: "G-FBS9T624TM"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+export default function SignUp() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [gender, setGender] = useState('');
+  const [isSignedUp, setIsSignedUp] = useState(false); // New state to track sign-up
 
+  // Handle Sign Up
   const handleSignUp = async () => {
-    // try {
-    //   const response = await fetch('http:///192.168.43.179:5000/api/auth/signup', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-    //       email,
-    //       name,
-    //       password,
+      // After sign-up, set the display name
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, {
+          displayName: name, // Set the display name
+        });
+      }
 
-    //     })
-    //   });
-    //   console.log(response);
-    //   const data = await response.json();
+      // Mark the user as signed up
+      setIsSignedUp(true);
 
-    //   if (response.ok) {
-    //     console.log('Sign up successful:', data);
-    //     Alert.alert('Success', 'Account created successfully!');
-    //     router.push('/signIn');
-    //   } else {
-    //     console.error('Sign up failed:', data);
-    //     Alert.alert('Error', data.message || 'Failed to sign up.');
-    //   }
-    // } catch (error) {
-    //   console.error('Error during sign up:', error);
-    //   Alert.alert('Error', 'An error occurred. Please try again.');
-    // }
+      Alert.alert('Success', 'Account created successfully!');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to sign up.');
+    }
+  };
+
+  // Google Sign-In
+  const handleGoogleSignIn = async () => {
+    const [request, response, promptAsync] =
+      GoogleAuthSession.useIdTokenAuthRequest({
+        clientId: "YOUR_GOOGLE_CLIENT_ID",
+      });
+
+    if (response?.type === 'success') {
+      try {
+        const credential = GoogleAuthProvider.credential(response.params.id_token);
+        await signInWithCredential(auth, credential);
+        Alert.alert('Success', 'Signed in with Google!');
+      } catch (error: any) {
+        Alert.alert('Error', error.message || 'Google Sign-In failed.');
+      }
+    } else {
+      Alert.alert('Error', 'Google Sign-In failed.');
+    }
+  };
+
+  // Apple Sign-In
+  const handleAppleSignIn = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      const idToken = credential.identityToken!;
+      const authCredential = GoogleAuthProvider.credential(idToken);
+
+      await signInWithCredential(auth, authCredential);
+      Alert.alert('Success', 'Signed in with Apple!');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Apple Sign-In failed.');
+    }
   };
 
   return (
@@ -82,11 +130,28 @@ export default function Component() {
         />
 
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>SignUp</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={[styles.button, styles.googleButton]}
+          onPress={handleGoogleSignIn}
+        >
+          <Text style={styles.buttonText}>Sign Up with Google</Text>
+        </TouchableOpacity>
+
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+          style={styles.appleButton}
+          onPress={handleAppleSignIn}
+        />
+
         <Text style={styles.loginText}>
-          Already have an account? <Link style={styles.loginLink} href="/(auth)/signIn">Login</Link>
+          Already have an account?{' '}
+          <Link style={styles.loginLink} href="/(auth)/signIn">
+            Login
+          </Link>
         </Text>
       </View>
     </SafeAreaView>
@@ -96,43 +161,65 @@ export default function Component() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#87CEFA', // Light blue background
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
-    flex: 1,
+    width: '90%',
     padding: 20,
-    justifyContent: 'center',
+    backgroundColor: '#FFFFFF', // White background
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1e3a8a',
+    color: '#002366', // Dark blue for text emphasis
     marginBottom: 20,
     textAlign: 'center',
   },
   label: {
     fontSize: 16,
-    color: '#1e3a8a',
-    marginBottom: 5,
+    color: '#555', // Lighter text color for labels
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 10,
+    borderColor: '#5AA9E6', // Subtle blue for borders
+    borderRadius: 12,
+    padding: 12,
     marginBottom: 15,
     fontSize: 16,
+    color: '#002366',
+    backgroundColor: '#fff', // White input background
   },
   button: {
-    backgroundColor: '#60a5fa',
-    padding: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#002147', // Dark blue for button
+    padding: 15,
+    borderRadius: 12,
     marginTop: 10,
   },
+  googleButton: {
+    backgroundColor: '#DB4437', // Google red
+    marginTop: 10,
+  },
+  appleButton: {
+    marginTop: 10,
+    height: 50,
+    width: '100%',
+  },
   buttonText: {
+    marginLeft: 10,
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   loginText: {
@@ -141,7 +228,7 @@ const styles = StyleSheet.create({
     color: '#4b5563',
   },
   loginLink: {
-    color: '#2563eb',
+    color: '#2563eb', // Blue link color for login
     fontWeight: 'bold',
   },
 });

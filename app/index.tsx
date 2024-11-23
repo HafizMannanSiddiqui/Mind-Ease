@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { ActivityIndicator } from 'react-native'
-// import { useFonts } from 'expo-font'
+import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import { router } from 'expo-router';
 const brain = require('../assets/images/brain.png');

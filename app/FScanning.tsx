@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Camera } from 'expo-camera';
-import { useNavigation } from '@react-navigation/native';
+import { CameraType } from 'expo-image-picker';
+//import { FScanningNavigationProp } from './navigation';
+//import { useNavigation } from '@react-navigation/native';
 
 export default function FScanning() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isPermissionRequested, setIsPermissionRequested] = useState(false); 
-  const navigation = useNavigation();
+  const [isPermissionRequested, setIsPermissionRequested] = useState(false);
+  const [cameraType, setCameraType] = useState(CameraType.back); // Fixed CameraType usage
+ // const navigation = useNavigation<FScanningNavigationProp>();
+
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
 
   const handleRequestPermission = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
     setHasPermission(status === 'granted');
-    setIsPermissionRequested(true); 
+    setIsPermissionRequested(true);
   };
 
   const handleStartScan = () => {
@@ -24,31 +35,51 @@ export default function FScanning() {
         if (prev >= 100) {
           clearInterval(progressInterval);
           setIsScanning(false);
-          navigation.goBack(); // Return to the previous screen or show success
+ //         navigation.goBack(); // Return to the previous screen or show success
         }
         return prev + 10;
       });
     }, 500);
   };
 
-  // If permission is requested but not granted, show the error message
-  if (isPermissionRequested && hasPermission === false) {
-    return <View><Text>No access to camera</Text></View>;
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return (
+      <View>
+        <Text>No access to camera</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backText}>{"<"}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text style={styles.headerTitle}>Face Scanning</Text>
       </View>
 
       {/* Camera Preview */}
       {hasPermission && (
-        <Camera style={styles.camera} type={Camera.Type.front} />
+        <Camera style={styles.camera} type={cameraType}>
+          {/* Toggle Camera Type Button */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() =>
+                setCameraType((prev) =>
+                  prev === CameraType.back ? CameraType.front : CameraType.back
+                )
+              }
+            >
+              <Text style={styles.buttonText}>Flip Camera</Text>
+            </TouchableOpacity>
+          </View>
+        </Camera>
       )}
 
       {/* Scan Progress and Button */}
@@ -61,11 +92,17 @@ export default function FScanning() {
         ) : (
           <>
             {!isPermissionRequested ? (
-              <TouchableOpacity style={styles.proceedButton} onPress={handleRequestPermission}>
+              <TouchableOpacity
+                style={styles.proceedButton}
+                onPress={handleRequestPermission}
+              >
                 <Text style={styles.proceedText}>Proceed</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.scanButton} onPress={handleStartScan}>
+              <TouchableOpacity
+                style={styles.scanButton}
+                onPress={handleStartScan}
+              >
                 <Text style={styles.scanText}>Start Scan</Text>
               </TouchableOpacity>
             )}
@@ -102,6 +139,22 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 15,
     overflow: 'hidden',
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#5AA9E6',
+    padding: 10,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   scanContainer: {
     justifyContent: 'center',

@@ -4,7 +4,13 @@ import { Picker } from '@react-native-picker/picker'; // Updated import
 import { FontAwesome } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText'; // Adjusted for your project structure
 import { ThemedView } from '@/components/ThemedView';
-import { useNavigation } from '@react-navigation/native'; // For navigation
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  HabitBuilder: undefined;
+  Todos: { habitDetails: Habit };
+};
 
 interface Habit {
   id: string;
@@ -21,6 +27,7 @@ export default function HabitBuilder() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+  //const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'HabitBuilder'>>();
   const [newHabit, setNewHabit] = useState<Habit>({
     id: '',
     name: '',
@@ -32,7 +39,6 @@ export default function HabitBuilder() {
     completedDays: 0,
   });
   const [isUpdating, setIsUpdating] = useState(false);
-  const navigation = useNavigation(); // Navigation hook
 
   const handleSaveHabit = () => {
     const { name, description, frequency, duration } = newHabit;
@@ -80,8 +86,8 @@ export default function HabitBuilder() {
   };
 
   const handleViewDetails = (habit: Habit) => {
-    navigation.navigate('Todos', { habitDetails: habit }); // Redirect to Todos with habit details
-  };
+    navigation.navigate('Todos', { habitDetails: habit });
+  };  
 
   const calculateRemainingDays = (habit: Habit) => {
     const durationInDays = parseInt(habit.duration.split(' ')[0], 10);
@@ -225,6 +231,11 @@ const styles = StyleSheet.create({
   habitActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  habitStatus: {
+    color: '#FF6347', // Example color for the habit status
+    fontSize: 14,
+    marginBottom: 8,
   },
   actionButton: {
     flexDirection: 'row',

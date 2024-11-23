@@ -1,20 +1,56 @@
-import React from 'react';
-import { StyleSheet, View, ScrollView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, ScrollView, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Text } from 'react-native';
-import { Svg, Circle } from 'react-native-svg';
+import { Svg, Circle } from 'react-native-svg'; // Import Svg and Circle
+import { Text as SvgText } from 'react-native-svg'; // Import Text as SvgText
+import { getAuth } from 'firebase/auth';
+import { format } from 'date-fns'; // For formatting the date
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/AppNavigation'; // Adjust the import according to your file structure
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type DashboardScreenProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
+};
+
+
 
 export default function Dashboard() {
-  const progress = 95;
+  const [currentDate, setCurrentDate] = useState<string>('');
+  const [username, setUsername] = useState<string | null>(null);
+  const progress = 95; // Example progress for the circular progress bar
+
+ // const navigation = useNavigation<DashboardScreenProps['navigation']>();
+
+  useEffect(() => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      setUsername(user.displayName || 'User');
+    } else {
+      setUsername('Guest');
+    }
+
+    // Set current date formatted as 'dd MMM, yyyy'
+    const formattedDate = format(new Date(), 'dd MMM, yyyy');
+    setCurrentDate(formattedDate);
+  }, []);
+
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <FontAwesome name="user-circle" size={40} color="#FFFFFF" />
+      <FontAwesome name="user-circle" size={40} color="#FFFFFF" />
+        {/* <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+          <FontAwesome name="user-circle" size={40} color="#FFFFFF" />
+        </TouchableOpacity> */}
+
         <View style={styles.headerText}>
-          <Text style={styles.userName}>Hi, John Doe</Text>
-          <Text style={styles.date}>18 Oct, 2024</Text>
+          <Text style={styles.userName}>{username}</Text>
+          <Text style={styles.date}>{currentDate}</Text>
         </View>
         <Ionicons name="search-outline" size={24} color="#FFFFFF" style={styles.searchIcon} />
       </View>
@@ -25,7 +61,7 @@ export default function Dashboard() {
         <View style={styles.taskCard}>
           <View style={styles.taskContent}>
             <View style={styles.textAndButton}>
-              <Text style={styles.cardText}>Your daily task almost done</Text>
+              <Text style={styles.cardText}>Your daily task is almost done</Text>
               <View style={styles.buttonWrapper}>
                 <Text style={styles.viewTaskButton}>View Task</Text>
               </View>
@@ -65,7 +101,7 @@ export default function Dashboard() {
 }
 
 // Circular Progress Bar
-const CircularProgressBar = ({ progress }) => {
+const CircularProgressBar = ({ progress }: { progress: number }) => {
   const strokeWidth = 6;
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
@@ -86,7 +122,7 @@ const CircularProgressBar = ({ progress }) => {
         fill="none"
         transform="rotate(-90 45 45)"
       />
-      <Text
+      <SvgText
         x="45"
         y="45"
         textAnchor="middle"
@@ -96,7 +132,7 @@ const CircularProgressBar = ({ progress }) => {
         fill="#FFFFFF"
       >
         {`${progress}%`}
-      </Text>
+      </SvgText>
     </Svg>
   );
 };
@@ -202,11 +238,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#5AA9E6',
     borderRadius: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    padding: 12,
+    marginBottom: 8,
   },
   upcomingTaskText: {
     marginLeft: 12,
@@ -214,10 +247,10 @@ const styles = StyleSheet.create({
   taskText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '500',
   },
   taskDate: {
-    color: '#E8F3FF',
+    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '400',
   },
