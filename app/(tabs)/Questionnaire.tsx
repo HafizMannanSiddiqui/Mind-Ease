@@ -1,43 +1,93 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/AppNavigation';  // Import your navigation types
+import questionsData from '../questions'; // Import the questions data
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+// Define the types for the options and questions
+interface Option {
+  text: string;
+  score: number;
+}
+
+interface Question {
+  id: number;
+  question: string;
+  options: Option[];
+}
+
+// Use the correct type for navigation
+//type QuestionnaireScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Questionnaire'>;
 
 export default function Questionnaire() {
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [score, setScore] = useState<number>(0);
+  
+  //const navigation = useNavigation<QuestionnaireScreenNavigationProp>();  // Type the navigation hook
+
+  const currentQuestion = questionsData[currentQuestionIndex];
+
+  const handleAnswerSelection = (option: Option, questionIndex: number) => {
+    const newScore = score + option.score;
+    setScore(newScore);
+
+    // Update the selected option
+    setSelectedOption(option);
+
+    // Move to the next question or show the score if it's the last question
+    if (currentQuestionIndex < questionsData.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      Alert.alert(`Quiz complete! Your score is ${newScore.toString()}`);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+      <FontAwesome name="arrow-left" size={24} color="#1D3557" />
+        {/* Back Button to go to Dashboard */}
+        {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Dashboard')}>
           <FontAwesome name="arrow-left" size={24} color="#1D3557" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Image
           source={{ uri: 'https://via.placeholder.com/40' }}
           style={styles.profileIcon}
         />
       </View>
 
-      <ThemedText type="title" style={styles.title}>Let's get to know you</ThemedText>
+      <Text style={styles.title}>Let's get to know you</Text>
       <Text style={styles.subtitle}>
         Please answer the following to help us understand your mental state better.
       </Text>
 
+      {/* Display the current question number out of total */}
+      <Text style={styles.questionProgress}>
+        Question {currentQuestionIndex + 1} / {questionsData.length}
+      </Text>
+
       <View style={styles.questionBox}>
-        <Text style={styles.questionNumber}>Q no: 1</Text>
-        <Text style={styles.questionText}>How was your day?</Text>
+        <Text style={styles.questionNumber}>Q {currentQuestion.id}</Text>
+        <Text style={styles.questionText}>{currentQuestion.question}</Text>
       </View>
 
-      {["Good", "Normal", "Bad", "Worst"].map((option, index) => (
+      {currentQuestion.options.map((option, index) => (
         <TouchableOpacity
           key={index}
           style={[
             styles.optionButton,
-            index === 1 && styles.selectedOption
+            selectedOption?.text === option.text && styles.selectedOption
           ]}
+          onPress={() => handleAnswerSelection(option, currentQuestion.id)}
         >
           <View style={styles.radioCircle}>
-            {index === 1 && <View style={styles.selectedCircle} />}
+            {selectedOption?.text === option.text && <View style={styles.selectedCircle} />}
           </View>
-          <Text style={styles.optionText}>{option}</Text>
+          <Text style={styles.optionText}>{option.text}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -74,6 +124,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#003f5c',
     marginTop: 8,
+  },
+  questionProgress: {
+    fontSize: 16,
+    color: '#003f5c',
+    marginTop: 8,
+    textAlign: 'center',
   },
   questionBox: {
     backgroundColor: '#002147',
