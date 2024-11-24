@@ -13,17 +13,21 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarShowLabel: false, // Remove titles
-        tabBarStyle: {
-          backgroundColor: '#1a1a2e', // Dark blue background color for tab bar
-          borderTopColor: 'transparent',
-          paddingBottom: Platform.select({ ios: 10, default: 5 }),
-          paddingTop: 5,
-        },
-      }}
-    >
+  <Tabs
+  screenOptions={{
+    tabBarShowLabel: true, // Show tab labels
+    tabBarStyle: {
+      backgroundColor: '#1a1a2e', // Dark blue background
+      borderTopColor: 'transparent', // No border at the top
+      paddingBottom: 2, // Ensure no additional padding interferes
+      paddingTop: 3,
+      paddingLeft: 5,
+      paddingRight:5,
+      marginBottom: 0, // Avoid spacing conflicts
+      height: 65, // Explicitly set height
+    },
+  }}
+>
       <Tabs.Screen
         name="FaceScan"
         options={{

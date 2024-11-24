@@ -10,6 +10,7 @@ import Dashboard from '../(tabs)/Dashboard';
 import ProfileScreen from '../ProfileScreen';
 import HabitBuilder from '../(tabs)/HabitBuilder';
 import Todos from '../(tabs)/Todos';
+import { Header } from 'react-native/Libraries/NewAppScreen';
 
 // Define the RootStackParamList for type safety
 export type RootStackParamList = {
@@ -25,10 +26,19 @@ const Stack = createNativeStackNavigator();
 
 function DashboardStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Dashboard" component={Dashboard} />
-      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-    </Stack.Navigator>
+   <Stack.Navigator>
+  <Stack.Screen 
+    name="Dashboard" 
+    component={Dashboard} 
+    options={{ headerShown: false }} 
+  />
+  <Stack.Screen 
+    name="ProfileScreen" 
+    component={ProfileScreen} 
+    options={{ headerShown: false }} 
+  />
+</Stack.Navigator>
+
   );
 }
 
@@ -45,7 +55,7 @@ export default function AppNavigation() {
     return (
       <NavigationContainer>
         <Tab.Navigator>
-          <Tab.Screen name="DashboardTab" component={DashboardStack} />
+          <Tab.Screen name="DashboardTab" component={DashboardStack} options={{headerShown:false}} />
           <Tab.Screen name="HabitBuilderTab" component={HabitBuilderStack} />
         </Tab.Navigator>
       </NavigationContainer>

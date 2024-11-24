@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigation';  // Import your navigation types
 import questionsData from '../questions'; // Import the questions data
 
+
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Define the types for the options and questions
@@ -49,7 +50,7 @@ export default function Questionnaire() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-      <FontAwesome name="arrow-left" size={24} color="#1D3557" />
+      <FontAwesome name="arrow-left" size={24} color="#1D3557"  />
         {/* Back Button to go to Dashboard */}
         {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Dashboard')}>
           <FontAwesome name="arrow-left" size={24} color="#1D3557" />
